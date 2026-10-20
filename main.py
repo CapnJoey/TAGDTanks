@@ -1,5 +1,6 @@
 from numpy import place
 import random
+from math import hypot
 import pygame as pg
 from level import Level
 from player import Player
@@ -36,8 +37,36 @@ class Game:
         self.shake_timer = 0.0
         self.shake_intensity = 3
 
+        # Peggle zoom
+        self.zoom = 1.0
+        self.max_zoom = 2.0
+        self.zoom_radius = 2.0
+        self.zoom_focus = (10, 7.5)
+        self.time_scale = 1.0
+        self.real_dt = 0
+
+    def update_zoom(self) -> None:
+        closest = None
+        for bullet in self.bullets:
+            for player in (self.player_1, self.player_2):
+                if player.tag == bullet.tag:
+                    continue
+                d = hypot(bullet.x - player.x, bullet.y - player.y)
+                if d < self.zoom_radius and (closest is None or d < closest[0]):
+                    closest = (d, bullet, player)
+
+        target_zoom = 1.0
+        if closest:
+            _, bullet, player = closest
+            target_zoom = self.max_zoom
+            self.zoom_focus = ((bullet.x + player.x) / 2, (bullet.y + player.y) / 2)
+
+        self.zoom += (target_zoom - self.zoom) * min(1.0, 8 * self.real_dt)
+        self.time_scale = 1.0 - 0.65 * (self.zoom - 1.0) / (self.max_zoom - 1.0)
+
     def update(self) -> None:
         self.shake_timer = max(0.0, self.shake_timer - self.dt)
+        self.update_zoom()
 
         self.player_1.update()
         self.player_2.update()
@@ -74,7 +103,14 @@ class Game:
         game_w, game_h = self.game_surf.get_size()
         scale = min(win_w / game_w, win_h / game_h)
         new_size = (int(game_w * scale), int(game_h * scale))
-        scaled = pg.transform.scale(self.game_surf, new_size)
+        view = self.game_surf
+        if self.zoom > 1.001:
+            view_w, view_h = game_w / self.zoom, game_h / self.zoom
+            fx, fy = self.zoom_focus[0] * 32, (15 - self.zoom_focus[1]) * 32
+            left = min(max(fx - view_w / 2, 0), game_w - view_w)
+            top = min(max(fy - view_h / 2, 0), game_h - view_h)
+            view = self.game_surf.subsurface(pg.Rect(int(left), int(top), int(view_w), int(view_h)))
+        scaled = pg.transform.scale(view, new_size)
 
         # Blit the game to the screen as letterbox
         pos = ((win_w - new_size[0]) // 2, (win_h - new_size[1]) // 2)
@@ -93,7 +129,8 @@ class Game:
                 if event.type == pg.QUIT:
                     self.running = False
             
-            self.dt = self.clock.tick(60) / 1000.0
+            self.real_dt = self.clock.tick(60) / 1000.0
+            self.dt = self.real_dt * self.time_scale
 
             self.update()
             self.render()
