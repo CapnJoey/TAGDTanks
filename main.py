@@ -1,10 +1,10 @@
-from numpy import place
 import random
 from math import hypot
 import pygame as pg
 from level import Level
 from player import Player
 from controller import Controller, HumanControllerLeft, HumanControllerRight
+from test_ai import Gilbert
 
 class Game:
     def __init__(self) -> None:
@@ -19,7 +19,7 @@ class Game:
         self.level.render()
 
         # Create the user controllers
-        self.controller_1 = HumanControllerLeft()
+        self.controller_1 = Gilbert()
         self.controller_2 = HumanControllerRight()
 
         # Create the players
@@ -92,7 +92,6 @@ class Game:
         else:
             self.player_2.render_to(self.game_surf)
             self.player_1.render_to(self.game_surf)
-
 
         for bullet in self.bullets:
             bullet.render_to(self.game_surf)
