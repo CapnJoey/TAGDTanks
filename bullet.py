@@ -59,7 +59,7 @@ class Bullet:
             if player.tag == self.tag:
                 continue
             if sqrt((self.x - player.x) ** 2 + (self.y - player.y) ** 2) <= 0.5:
-                print("KILL PLAYER")
+                print("KILL PLAYER", self.tag)
                 self.dead = True
 
     def render_to(self, surf: pg.Surface):
