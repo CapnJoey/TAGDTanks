@@ -9,6 +9,7 @@ class Game:
         self.win = pg.display.set_mode((800, 600), pg.RESIZABLE)
         self.game_surf = pg.Surface((32 * 20, 32 * 15)).convert()
         self.clock = pg.time.Clock()
+        self.dt = 0
 
         # Make and render a level
         self.level = Level()
@@ -19,15 +20,16 @@ class Game:
         self.controller_2 = Controller()
 
         # Create the players
-        self.player_1 = Player(self, self.controller_1, None, 2, 7, 45)
-        self.player_2 = Player(self, self.controller_2, None, 18, 7)
+        self.player_1 = Player(self, self.controller_1, None, 2, 7, 0)
+        self.player_2 = Player(self, self.controller_2, None, 18, 7, 180)
 
         # Set the enemies
         self.player_1.enemy = self.player_2
         self.player_2.enemy = self.player_1
 
     def update(self) -> None:
-        ...
+        self.player_1.update()
+        self.player_2.update()
 
     def render(self) -> None:
         # Clear background
@@ -60,7 +62,7 @@ class Game:
                 if event.type == pg.QUIT:
                     self.running = False
             
-            self.clock.tick(60)
+            self.dt = self.clock.tick(60) / 1000.0
 
             self.update()
             self.render()

@@ -1,5 +1,5 @@
 import pygame as pg
-
+from numpy import cos, sin, deg2rad
 
 class Player:
     def __init__(self, game, controller, enemy, start_x: float=1.0, start_y: float=1.0, start_dir: float=0.0) -> None:
@@ -8,6 +8,10 @@ class Player:
         self.y = start_y
         self.body_direction = start_dir
         self.gun_direction = start_dir
+
+        self.body_turn_speed = 360 / 2
+        self.gun_turn_speed = 360 / 2
+        self.move_speed = 1.5
 
         # Parent game
         self.game = game
@@ -40,6 +44,30 @@ class Player:
 
         # Call the user controller method
         self.controller.update()
+
+        # Apply the user changes
+        dt = self.game.dt
+
+        # Body turning
+        if self.controller.body_turn_action == 'clockwise':
+            self.body_direction += self.body_turn_speed * dt
+        if self.controller.body_turn_action == 'counter_clockwise':
+            self.body_direction -= self.body_turn_speed * dt
+
+        # Gun turning
+        if self.controller.gun_turn_action == 'clockwise':
+            self.gun_direction += self.gun_turn_speed * dt
+        if self.controller.gun_turn_action == 'counter_clockwise':
+            self.gun_direction -= self.gun_turn_speed * dt
+
+        # Movement
+        if self.controller.move_action == 'forward':
+            self.x += self.move_speed * cos(deg2rad(self.body_direction)) * dt
+            self.y += self.move_speed * sin(deg2rad(self.body_direction)) * dt
+        if self.controller.move_action == 'backward':
+            self.x -= self.move_speed * cos(deg2rad(self.body_direction)) * dt
+            self.y -= self.move_speed * sin(deg2rad(self.body_direction)) * dt
+
 
     def render_to(self, surf: pg.Surface):
         # Center of the tile in screen coordinates

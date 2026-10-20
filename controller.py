@@ -28,25 +28,29 @@ class Controller:
 
         # START YOUR CODE HERE
 
-
+        print("hi")
+        self.move_forward()
+        self.turn_body_clockwise()
+        # self.turn_gun_counter_clockwise()
+        print(self.move_action)
 
         # END YOUR CODE HERE
 
 
-    def turn_body_left(self): 
-        self.body_turn_action = "left"
+    def turn_body_clockwise(self): 
+        self.body_turn_action = "clockwise"
 
-    def turn_body_right(self):
-        self.body_turn_action = "right"
+    def turn_body_counter_clockwise(self):
+        self.body_turn_action = "counter_clockwise"
     
     def stop_turn_body(self):
         self.body_turn_action = None
 
-    def turn_gun_left(self):
-        self.gun_turn_action = "left"
+    def turn_gun_clockwise(self):
+        self.gun_turn_action = "clockwise"
 
-    def turn_gun_right(self):
-        self.gun_turn_action = "right"
+    def turn_gun_counter_clockwise(self):
+        self.gun_turn_action = "counter_clockwise"
 
     def stop_turn_gun(self):
         self.gun_turn_action = None
