@@ -1,5 +1,6 @@
 import pygame as pg
 from level import Level
+from player import Player
 
 class Game:
     def __init__(self) -> None:
@@ -11,18 +12,21 @@ class Game:
         self.level = Level()
         self.level.render()
 
-        self.player_1 = None
-        self.player_2 = None
+        self.player_1 = Player(None, 2, 7, 45)
+        self.player_2 = Player(None, 18, 7)
 
     def update(self) -> None:
         ...
 
     def render(self) -> None:
         # Clear background
-        self.win.fill((0, 0, 0, 1))
+        self.win.fill((0, 0, 0, 255))
 
-        # Render 
+        # Render game
         self.level.blit_to(self.game_surf)
+        self.player_1.render_to(self.game_surf)
+        self.player_2.render_to(self.game_surf)
+
 
         # Get the blit dims
         win_w, win_h = self.win.get_size()
@@ -35,7 +39,7 @@ class Game:
         pos = ((win_w - new_size[0]) // 2, (win_h - new_size[1]) // 2)
         self.win.blit(scaled, pos)
 
-
+        # Update the screen
         pg.display.flip()
 
     def run(self) -> None:
@@ -49,7 +53,6 @@ class Game:
 
             self.update()
             self.render()
-            print("test")
 
 pg.init()
 game = Game()
