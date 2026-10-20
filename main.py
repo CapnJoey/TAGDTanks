@@ -1,4 +1,5 @@
 from numpy import place
+import random
 import pygame as pg
 from level import Level
 from player import Player
@@ -31,7 +32,13 @@ class Game:
         # Bullet array
         self.bullets = []
 
+        # Screen shake
+        self.shake_timer = 0.0
+        self.shake_intensity = 3
+
     def update(self) -> None:
+        self.shake_timer = max(0.0, self.shake_timer - self.dt)
+
         self.player_1.update()
         self.player_2.update()
 
@@ -71,6 +78,9 @@ class Game:
 
         # Blit the game to the screen as letterbox
         pos = ((win_w - new_size[0]) // 2, (win_h - new_size[1]) // 2)
+        if self.shake_timer > 0:
+            pos = (pos[0] + random.randint(-self.shake_intensity, self.shake_intensity),
+                   pos[1] + random.randint(-self.shake_intensity, self.shake_intensity))
         self.win.blit(scaled, pos)
 
         # Update the screen

@@ -90,6 +90,7 @@ class Player:
             bullet = Bullet(x, y, self.gun_direction, self.tag)
             self.game.bullets.append(bullet)
             self.shoot_timer = self.shoot_cooldown_time
+            self.game.shake_timer = 0.15
 
 
     def render_to(self, surf: pg.Surface):
