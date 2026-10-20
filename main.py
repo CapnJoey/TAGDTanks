@@ -4,7 +4,7 @@ import pygame as pg
 from level import Level
 from player import Player
 from controller import Controller, HumanControllerLeft, HumanControllerRight
-from test_ai import Gilbert
+from test_ai import Gilbert, TestTank
 
 class Game:
     def __init__(self) -> None:
@@ -19,8 +19,8 @@ class Game:
         self.level.render()
 
         # Create the user controllers
-        self.controller_1 = Gilbert()
-        self.controller_2 = HumanControllerRight()
+        self.controller_1 = TestTank()
+        self.controller_2 = Gilbert()
 
         # Create the players
         self.player_1 = Player(self, self.controller_1, None, 2, 7, 0, 1)

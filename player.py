@@ -1,8 +1,40 @@
 import pygame as pg
+import numpy as np
 from numpy import cos, sin, deg2rad
 
 from bullet import Bullet
 from controller import EnemyBullet
+
+def collide(map: np.ndarray, x: float, y: float) -> tuple[float, float]:
+    """
+    Returns new position of Player after collision with map walls
+    Doesn't change position if there is no collision
+    """
+    r = 0.5
+    # get 2x2 grid containing player
+    gx = int(np.floor(x - r))
+    gy = int(np.floor(y - r))
+
+    for i in (gx, gx + 1):
+        for j in (gy, gy + 1):
+            # check to see if the player is colliding with any of the walls
+            if i < 0 or j < 0 or i >= map.shape[0] or j >= map.shape[1]:
+                continue
+            if not map[i][j]:
+                continue
+
+            # resolve with the minimal translation vector   
+            overlap_x = min(x + r, i + 1) - max(x - r, i)
+            overlap_y = min(y + r, j + 1) - max(y - r, j)
+            if overlap_x <= 0 or overlap_y <= 0:
+                continue
+
+            if overlap_x < overlap_y: 
+                x += overlap_x if x > i + 0.5 else -overlap_x
+            else: 
+                y += overlap_y if y > j + 0.5 else -overlap_y
+
+    return x, y
 
 class Player:
     def __init__(self, game, controller, enemy, start_x: float=1.0, start_y: float=1.0, start_dir: int=0, tag: int=1) -> None:
@@ -17,7 +49,7 @@ class Player:
         self.gun_turn_speed = 360 / 2
         self.move_speed = 1.5
         self.shoot_timer = 0.0
-        self.shoot_cooldown_time = 1.0
+        self.shoot_cooldown_time = 4.0
 
         # Parent game
         self.game = game
@@ -46,6 +78,8 @@ class Player:
                 continue
             dummy_bullet = EnemyBullet(bullet.x, bullet.y, bullet.direction)
             self.controller.enemy_bullets.append(dummy_bullet)
+            
+        dt = self.game.dt
 
         # Update state variables
         self.controller.x = self.x
@@ -55,13 +89,12 @@ class Player:
         self.controller.body_direction = self.body_direction
         self.controller.gun_direction = self.gun_direction
         self.controller.map = self.game.level.map
+        self.controller.dt = dt
 
         # Call the user controller method
         self.controller.update()
 
         # Apply the user changes
-        dt = self.game.dt
-
         # Body turning
         if self.controller.body_turn_action == 'clockwise':
             self.body_direction -= self.body_turn_speed * dt
@@ -81,6 +114,8 @@ class Player:
         if self.controller.move_action == 'backward':
             self.x -= self.move_speed * cos(deg2rad(self.body_direction)) * dt
             self.y -= self.move_speed * sin(deg2rad(self.body_direction)) * dt
+
+        self.x, self.y = collide(self.game.level.map, self.x, self.y)
 
         # Shoot
         self.shoot_timer -= dt
