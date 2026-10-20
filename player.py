@@ -1,17 +1,23 @@
 import pygame as pg
 from numpy import cos, sin, deg2rad
 
+from bullet import Bullet
+from controller import EnemyBullet
+
 class Player:
-    def __init__(self, game, controller, enemy, start_x: float=1.0, start_y: float=1.0, start_dir: float=0.0) -> None:
+    def __init__(self, game, controller, enemy, start_x: float=1.0, start_y: float=1.0, start_dir: int=0, tag: int=1) -> None:
         # Player state variables
         self.x = start_x
         self.y = start_y
         self.body_direction = start_dir
         self.gun_direction = start_dir
+        self.tag = tag
 
         self.body_turn_speed = 360 / 2
         self.gun_turn_speed = 360 / 2
         self.move_speed = 1.5
+        self.shoot_timer = 0.0
+        self.shoot_cooldown_time = 1.0
 
         # Parent game
         self.game = game
@@ -22,7 +28,7 @@ class Player:
 
         # Load image assets
         self.body_image = pg.Surface((32, 32)).convert_alpha()
-        self.gun_image = pg.Surface((32, 32)).convert_alpha()
+        self.gun_image = pg.Surface((16, 8)).convert_alpha()
         self.body_image.fill((255, 0, 0))
         self.gun_image.fill((0, 255, 0))
 
@@ -32,6 +38,13 @@ class Player:
         self.controller.gun_turn_action = None
         self.controller.move_action = None
         self.controller.shoot_action = False
+        self.controller.gun_ready = self.shoot_timer <= 0.0
+        self.controller.enemy_bullets = []
+        for bullet in self.game.bullets:
+            if bullet.tag == self.tag: 
+                continue
+            dummy_bullet = EnemyBullet(bullet.x, bullet.y, bullet.direction)
+            self.controller.enemy_bullets.append(dummy_bullet)
 
         # Update state variables
         self.controller.x = self.x
@@ -67,6 +80,15 @@ class Player:
         if self.controller.move_action == 'backward':
             self.x -= self.move_speed * cos(deg2rad(self.body_direction)) * dt
             self.y -= self.move_speed * sin(deg2rad(self.body_direction)) * dt
+
+        # Shoot
+        self.shoot_timer -= dt
+        if self.shoot_timer <= 0.0 and self.controller.shoot_action:
+            x = self.x + cos(deg2rad(self.gun_direction)) * 0.3
+            y = self.y + sin(deg2rad(self.gun_direction)) * 0.3
+            bullet = Bullet(x, y, self.gun_direction, self.tag)
+            self.game.bullets.append(bullet)
+            self.shoot_timer = self.shoot_cooldown_time
 
 
     def render_to(self, surf: pg.Surface):

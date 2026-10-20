@@ -20,16 +20,28 @@ class Game:
         self.controller_2 = HumanControllerRight()
 
         # Create the players
-        self.player_1 = Player(self, self.controller_1, None, 2, 7, 0)
-        self.player_2 = Player(self, self.controller_2, None, 18, 7, 180)
+        self.player_1 = Player(self, self.controller_1, None, 2, 7, 0, 1)
+        self.player_2 = Player(self, self.controller_2, None, 18, 7, 180, 2)
 
         # Set the enemies
         self.player_1.enemy = self.player_2
         self.player_2.enemy = self.player_1
 
+        # Bullet array
+        self.bullets = []
+
     def update(self) -> None:
         self.player_1.update()
         self.player_2.update()
+
+        dead = []
+        for bullet in self.bullets:
+            bullet.update([self.player_1, self.player_2], self.level.map, self.dt)
+            if bullet.dead:
+                dead.append(bullet)
+
+        for bullet in dead:
+            self.bullets.remove(bullet)
 
     def render(self) -> None:
         # Clear background
@@ -39,6 +51,9 @@ class Game:
         self.level.blit_to(self.game_surf)
         self.player_1.render_to(self.game_surf)
         self.player_2.render_to(self.game_surf)
+
+        for bullet in self.bullets:
+            bullet.render_to(self.game_surf)
 
 
         # Get the blit dims
