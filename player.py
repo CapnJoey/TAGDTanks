@@ -6,10 +6,10 @@ class Player:
         # Player state variables
         self.x = start_x
         self.y = start_y
-        self.direction = start_dir
+        self.body_direction = start_dir
         self.gun_direction = start_dir
 
-        # Slave controller
+        # Child controller
         self.controller = controller
 
         # Load image assets
@@ -19,6 +19,7 @@ class Player:
         self.gun_image.fill((0, 255, 0))
 
     def update(self):
+        self.controller.tur
         self.controller.update()
 
     def render_to(self, surf: pg.Surface):
@@ -26,7 +27,7 @@ class Player:
         center = (self.x * 32, (15 - self.y) * 32)
 
         for image, angle in (
-            (self.body_image, self.direction),
+            (self.body_image, self.body_direction),
             (self.gun_image, self.gun_direction),
         ):
             rotated = pg.transform.rotate(image, angle)
