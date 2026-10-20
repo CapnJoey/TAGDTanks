@@ -30,8 +30,8 @@ class Level:
 
         for x in range(20):
             for y in range(15):
-                if not self.map[x][y]: continue
-                self.surface.blit(self.rock_image[0], (x * 32, y * 32))
+                if not self.map[x][14 - y]: continue
+                self.surface.blit(self.rock_image[0], (x * 32, (14 - y) * 32))
 
     def blit_to(self, surf: pg.Surface, location: tuple=None) -> None:
         location = location or (0, 0)
