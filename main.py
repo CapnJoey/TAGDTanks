@@ -1,3 +1,4 @@
+from numpy import place
 import pygame as pg
 from level import Level
 from player import Player
@@ -49,8 +50,13 @@ class Game:
 
         # Render game
         self.level.blit_to(self.game_surf)
-        self.player_1.render_to(self.game_surf)
-        self.player_2.render_to(self.game_surf)
+        if self.player_1.y > self.player_2.y:
+            self.player_1.render_to(self.game_surf)
+            self.player_2.render_to(self.game_surf)
+        else:
+            self.player_2.render_to(self.game_surf)
+            self.player_1.render_to(self.game_surf)
+
 
         for bullet in self.bullets:
             bullet.render_to(self.game_surf)

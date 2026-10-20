@@ -27,9 +27,10 @@ class Player:
         self.enemy = enemy
 
         # Load image assets
-        self.body_image = pg.Surface((32, 32)).convert_alpha()
+        self.body_image = pg.image.load("./assets/tank.png").convert_alpha()
+        self.body_image = pg.transform.scale(self.body_image, (32, 32))
+
         self.gun_image = pg.Surface((16, 8)).convert_alpha()
-        self.body_image.fill((255, 0, 0))
         self.gun_image.fill((0, 255, 0))
 
     def update(self):
@@ -92,14 +93,17 @@ class Player:
 
 
     def render_to(self, surf: pg.Surface):
-        # Center of the tile in screen coordinates
-        center = (self.x * 32, (15 - self.y) * 32)
+        layers = 5
+        separation = 1
+        center = (self.x * 32, (15 - self.y) * 32 + layers * separation)
 
-        # Render body and gun at respective directions
-        for image, angle in (
-            (self.body_image, self.body_direction),
-            (self.gun_image, self.gun_direction),
-        ):
-            rotated = pg.transform.rotate(image, angle)
-            rect = rotated.get_rect(center=center)
+        # Render body: rotate once, blit at stacked offsets
+        rotated = pg.transform.rotate(self.body_image, self.body_direction)
+        for stack_y in range(layers):
+            rect = rotated.get_rect(center=(center[0], center[1] - stack_y * separation))
             surf.blit(rotated, rect)
+
+        # Render gun on top of the stack
+        rotated = pg.transform.rotate(self.gun_image, self.gun_direction)
+        rect = rotated.get_rect(center=(center[0], center[1] - layers * separation))
+        surf.blit(rotated, rect)
