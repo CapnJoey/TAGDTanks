@@ -50,15 +50,15 @@ class Player:
 
         # Body turning
         if self.controller.body_turn_action == 'clockwise':
-            self.body_direction += self.body_turn_speed * dt
-        if self.controller.body_turn_action == 'counter_clockwise':
             self.body_direction -= self.body_turn_speed * dt
+        if self.controller.body_turn_action == 'counter_clockwise':
+            self.body_direction += self.body_turn_speed * dt
 
         # Gun turning
         if self.controller.gun_turn_action == 'clockwise':
-            self.gun_direction += self.gun_turn_speed * dt
-        if self.controller.gun_turn_action == 'counter_clockwise':
             self.gun_direction -= self.gun_turn_speed * dt
+        if self.controller.gun_turn_action == 'counter_clockwise':
+            self.gun_direction += self.gun_turn_speed * dt
 
         # Movement
         if self.controller.move_action == 'forward':
