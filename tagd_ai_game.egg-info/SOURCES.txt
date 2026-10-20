@@ -1,0 +1,6 @@
+pyproject.toml
+tagd_ai_game.egg-info/PKG-INFO
+tagd_ai_game.egg-info/SOURCES.txt
+tagd_ai_game.egg-info/dependency_links.txt
+tagd_ai_game.egg-info/requires.txt
+tagd_ai_game.egg-info/top_level.txt

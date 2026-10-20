@@ -1,0 +1,15 @@
+[project]
+name = "tagd-ai-game"
+version = "0.1.0"
+description = "Game for learning AI at TAGD"
+requires-python = ">=3.9"
+dependencies = [
+    "pygame-ce",
+]
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = []
