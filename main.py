@@ -1,6 +1,7 @@
 import pygame as pg
 from level import Level
 from player import Player
+from controller import Controller
 
 class Game:
     def __init__(self) -> None:
@@ -9,11 +10,21 @@ class Game:
         self.game_surf = pg.Surface((32 * 20, 32 * 15)).convert()
         self.clock = pg.time.Clock()
 
+        # Make and render a level
         self.level = Level()
         self.level.render()
 
-        self.player_1 = Player(None, 2, 7, 45)
-        self.player_2 = Player(None, 18, 7)
+        # Create the user controllers
+        self.controller_1 = Controller()
+        self.controller_2 = Controller()
+
+        # Create the players
+        self.player_1 = Player(self, self.controller_1, None, 2, 7, 45)
+        self.player_2 = Player(self, self.controller_2, None, 18, 7)
+
+        # Set the enemies
+        self.player_1.enemy = self.player_2
+        self.player_2.enemy = self.player_1
 
     def update(self) -> None:
         ...

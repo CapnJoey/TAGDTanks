@@ -4,6 +4,8 @@ class Controller:
     def __init__(self) -> None:
         self.x = 0
         self.y = 0
+        self.enemy_x = 0
+        self.enemy_y = 0
         self.body_direction = 0
         self.gun_direction = 0
         self.map = np.zeros((20, 15))
