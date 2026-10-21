@@ -49,7 +49,7 @@ class Player:
         self.gun_turn_speed = 360 / 2
         self.move_speed = 1.5
         self.shoot_timer = 0.0
-        self.shoot_cooldown_time = 4.0
+        self.shoot_cooldown_time = 3.0
 
         # Parent game
         self.game = game
@@ -60,19 +60,22 @@ class Player:
 
         # Load image assets
         self.body_images = [
-            pg.image.load(f"./assets/{image}.png").convert_alpha() for image in ("tank1", "tank1")
+            pg.image.load(f"./assets/{image}.png").convert_alpha() for image in ("tank2", "tank3", "tank4", "tank1")
         ]
-        # self.body_image = pg.image.load("./assets/tank.png").convert_alpha()
-        # self.body_image = pg.transform.scale(self.body_image, (32, 32))
-
-        self.gun_image = pg.Surface((16, 8)).convert_alpha()
-        self.gun_image.fill((0, 255, 0))
+        self.gun_images = [
+            pg.image.load(f"./assets/{image}.png").convert_alpha() for image in ("gun2", "gun3", "gun4", "gun1")
+        ]
+        
+        self.bullet_image = pg.image.load(f"./assets/bullet.png").convert_alpha()
+        self.bullet_image = pg.transform.scale(self.bullet_image, (32, 32))
 
         # Set up animation variables
         self.body_animation_frame = 0
         self.gun_animation_frame = 0
-        self.animation_time = 0.5
+        self.animation_time = 0.1
         self.frame_timer = 0.0
+        self.moving = False
+        self.shooting = 0
 
     def update(self):
 
@@ -110,9 +113,10 @@ class Player:
         # Update animations
         self.frame_timer += dt
         if self.frame_timer > self.animation_time:
-            self.body_animation_frame = (self.body_animation_frame + 1) % 2
-            self.gun_animation_frame  = (self.body_animation_frame + 1) % 2
+            self.body_animation_frame = (self.body_animation_frame + 1) % 3
+            self.gun_animation_frame  = (self.body_animation_frame + 1) % 3
             self.frame_timer = 0.0
+            self.shooting -= 1
 
         # Apply the user changes
         # Body turning
@@ -137,15 +141,25 @@ class Player:
 
         self.x, self.y = collide(self.game.level.map, self.x, self.y)
 
+        self.moving = (
+            self.controller.move_action == 'forward' or
+            self.controller.move_action == 'backward' or
+            self.controller.body_turn_action == 'clockwise' or
+            self.controller.body_turn_action == 'counter_clockwise'
+        )
+
         # Shoot
         self.shoot_timer -= dt
         if self.shoot_timer <= 0.0 and self.controller.shoot_action:
             x = self.x + cos(deg2rad(self.gun_direction)) * 0.3
             y = self.y + sin(deg2rad(self.gun_direction)) * 0.3
-            bullet = Bullet(x, y, self.gun_direction, self.tag)
+            bullet = Bullet(x, y, self.gun_direction, self.tag, self.bullet_image)
             self.game.bullets.append(bullet)
             self.shoot_timer = self.shoot_cooldown_time
             self.game.shake_timer = 0.15
+            self.shooting = 3
+            self.gun_animation_frame = 0
+            self.frame_timer = 0
 
 
     def render_to(self, surf: pg.Surface):
@@ -154,12 +168,14 @@ class Player:
         center = (self.x * 32, (15 - self.y) * 32 + layers * separation)
 
         # Render body: rotate once, blit at stacked offsets
-        rotated = pg.transform.rotate(self.body_images[self.body_animation_frame], self.body_direction)
+        body_image = self.body_images[self.body_animation_frame] if self.moving else self.body_images[-1]
+        rotated = pg.transform.rotate(body_image, self.body_direction)
         for stack_y in range(layers):
             rect = rotated.get_rect(center=(center[0], center[1] - stack_y * separation))
             surf.blit(rotated, rect)
 
         # Render gun on top of the stack
-        rotated = pg.transform.rotate(self.gun_image, self.gun_direction)
+        gun_image = self.gun_images[self.gun_animation_frame] if self.shooting > 0 else self.gun_images[-1]
+        rotated = pg.transform.rotate(gun_image, self.gun_direction)
         rect = rotated.get_rect(center=(center[0], center[1] - layers * separation))
         surf.blit(rotated, rect)

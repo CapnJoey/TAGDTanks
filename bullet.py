@@ -3,7 +3,7 @@ from numpy import sin, cos, sqrt, pi, deg2rad
 from math import floor, ceil
 
 class Bullet:
-    def __init__(self, start_x: float=10, start_y: float=7, direction: int=0, tag: int=0) -> None:
+    def __init__(self, start_x: float=10, start_y: float=7, direction: int=0, tag: int=0, image: pg.Surface|None=None) -> None:
         self.x = start_x
         self.y = start_y
         self.direction = direction
@@ -14,8 +14,11 @@ class Bullet:
         self.speed = 4
         self.dead = False
 
-        self.bullet_image = pg.Surface((6, 6)).convert_alpha()
-        self.bullet_image.fill((0, 0, 255))
+        if image:
+            self.bullet_image = image
+        else:
+            self.bullet_image = pg.Surface((6, 6)).convert_alpha()
+            self.bullet_image.fill((0, 0, 255))
 
 
     @staticmethod
