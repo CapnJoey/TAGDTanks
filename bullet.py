@@ -11,7 +11,7 @@ class Bullet:
 
         self.bounce_count = 0
         self.max_bounces = 1
-        self.speed = 4
+        self.speed = 5
         self.dead = False
 
         if image:
