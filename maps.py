@@ -25,6 +25,16 @@ def line_y(map: np.ndarray, y1: int, y2: int, x: int) -> np.ndarray:
         map[x, y] = 1
     return map
 
+def clear_line_x(map: np.ndarray, x1: int, x2: int, y: int) -> np.ndarray:
+    for x in range(x1, x2):
+        map[x, y] = 0
+    return map
+
+def clear_line_y(map: np.ndarray, y1: int, y2: int, x: int) -> np.ndarray:
+    for y in range(y1, y2):
+        map[x, y] = 0
+    return map
+
 def plus_map(map: np.ndarray) -> np.ndarray:
     map = line_x(map, 4, 16, 7)
     map = line_y(map, 3, 12, 9)
@@ -37,6 +47,9 @@ def bars_map(map: np.ndarray) -> np.ndarray:
     return map
 
 def rect_map(map: np.ndarray) -> np.ndarray:
-    for y in range(4, 11):
-        line_x(map, 4, 16, y)
+    for y in range(5, 10):
+        line_x(map, 5, 15, y)
+
+    for y in range(6, 9):
+        clear_line_x(map, 6, 14, y)
     return map
