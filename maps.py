@@ -7,11 +7,11 @@ def empty_map() -> np.ndarray:
 
     # Always add border
     for x in range(20):
-        map[x][0] = 1
-        map[x][-1] = 1
+        map[x][0] = 2
+        map[x][-1] = 2
     for y in range(15):
-        map[0][y] = 1
-        map[-1][y] = 1
+        map[0][y] = 2
+        map[-1][y] = 2
         
     return map
     

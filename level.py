@@ -11,7 +11,7 @@ class Level:
         self.fill_map()
 
         # Load enviornment images
-        self.bg_image = pg.image.load("./assets/bg.png").convert()
+        self.bg_image = pg.image.load("./assets/bgwalled.png").convert()
         self.rock_image = [pg.image.load(f"./assets/rock{i+1}.png") for i in range(6)]
 
     def fill_map(self) -> None:
@@ -30,7 +30,7 @@ class Level:
 
         for x in range(20):
             for y in range(15):
-                if not self.map[x][14 - y]: continue
+                if not self.map[x][14 - y] == 1: continue
                 self.surface.blit(self.rock_image[random.randrange(0, 6)], (x * 32, (14 - y) * 32))
 
     def blit_to(self, surf: pg.Surface, location: tuple=None) -> None:

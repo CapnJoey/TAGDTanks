@@ -316,7 +316,7 @@ def IIIII1Ill1IIll111IlI11l111IIIlIII(l1l1Ill1II111111l1Il1IlIIIl11IIII, llllIll
     l1lI1lI1II1l1lllllIlIllIll1lI1l1l = IllIIIllIIIl1IIlII1llI1111I11Il11.linalg.norm(llllIllI11Ill1l1IlIlI1IlIllIl1III - l1l1Ill1II111111l1Il1IlIIIl11IIII, axis=-1)
     l1IIllIllllIlIIl1111l1111I1llI1l1 = IllIIIllIIIl1IIlII1llI1111I11Il11.clip(l1I1l11IIlIlI1llIlIlI1ll1l1IlI1Il + lIllll1IIl11II1IllIIIII1I1IIlIIIl - l1lI1lI1II1l1lllllIlIllIll1lI1l1l, 0.0, None)
     return float(IllIIIllIIIl1IIlII1llI1111I11Il11.sum(l1IIllIllllIlIIl1111l1111I1llI1l1 / III1lIl1Il1lI11l1IIl11I1ll1IIIl1I))
-class Gilbert:
+class Controller:
     def __init__(self):
         self.x = 0
         self.y = 0

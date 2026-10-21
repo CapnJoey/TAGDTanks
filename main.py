@@ -3,8 +3,8 @@ from math import hypot
 import pygame as pg
 from level import Level
 from player import Player
-from controller import Controller, HumanControllerLeft, HumanControllerRight
-from test_ai import Gilbert, TestTank
+from user import get_bot_names, User
+from main_menu import MainMenu
 
 class Game:
     def __init__(self) -> None:
@@ -18,17 +18,8 @@ class Game:
         self.level = Level()
         self.level.render()
 
-        # Create the user controllers
-        self.controller_1 = HumanControllerLeft()
-        self.controller_2 = Gilbert()
-
-        # Create the players
-        self.player_1 = Player(self, self.controller_1, None, 2, 7, 0, 1)
-        self.player_2 = Player(self, self.controller_2, None, 18, 7, 180, 2)
-
-        # Set the enemies
-        self.player_1.enemy = self.player_2
-        self.player_2.enemy = self.player_1
+        # Main menu
+        self.main_menu = MainMenu(self)
 
         # Bullet array
         self.bullets = []
@@ -44,6 +35,19 @@ class Game:
         self.zoom_focus = (10, 7.5)
         self.time_scale = 1.0
         self.real_dt = 0
+
+    def start_match(self, name_1: str, name_2: str) -> None:
+        # Load users
+        self.user_1 = User(name_1)
+        self.user_2 = User(name_2)
+
+        # Create the players
+        self.player_1 = Player(self, self.user_1, None, 2, 7, 0, 1)
+        self.player_2 = Player(self, self.user_2, None, 18, 7, 180, 2)
+
+        # Set the enemies
+        self.player_1.enemy = self.player_2
+        self.player_2.enemy = self.player_1
 
     def update_zoom(self) -> None:
         closest = None
@@ -125,6 +129,10 @@ class Game:
 
     def run(self) -> None:
         self.running = True
+        self.main_menu.run()
+        if not self.running:
+            return
+        self.start_match(*self.main_menu.selected_names)
         while self.running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
