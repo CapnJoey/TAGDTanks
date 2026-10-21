@@ -44,6 +44,7 @@ class Player:
         self.body_direction = start_dir
         self.gun_direction = start_dir
         self.tag = tag
+        self.alive = True
 
         self.body_turn_speed = 360 / 2
         self.gun_turn_speed = 360 / 2
@@ -105,7 +106,8 @@ class Player:
         self.controller.dt = dt
 
         # Call the user controller method
-        self.controller.update()
+        if self.alive:
+            self.controller.update()
 
         # Update animations
         self.frame_timer += dt
