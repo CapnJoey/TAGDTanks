@@ -1,10 +1,10 @@
-from numpy import place
 import random
 from math import hypot
 import pygame as pg
 from level import Level
 from player import Player
 from controller import Controller, HumanControllerLeft, HumanControllerRight
+from test_ai import Gilbert, TestTank
 
 class Game:
     def __init__(self) -> None:
@@ -19,8 +19,8 @@ class Game:
         self.level.render()
 
         # Create the user controllers
-        self.controller_1 = HumanControllerLeft()
-        self.controller_2 = HumanControllerRight()
+        self.controller_1 = Gilbert()
+        self.controller_2 = Gilbert()
 
         # Create the players
         self.player_1 = Player(self, self.controller_1, None, 2, 7, 0, 1)
@@ -93,7 +93,6 @@ class Game:
             self.player_2.render_to(self.game_surf)
             self.player_1.render_to(self.game_surf)
 
-
         for bullet in self.bullets:
             bullet.render_to(self.game_surf)
 
@@ -105,11 +104,13 @@ class Game:
         new_size = (int(game_w * scale), int(game_h * scale))
         view = self.game_surf
         if self.zoom > 1.001:
-            view_w, view_h = game_w / self.zoom, game_h / self.zoom
+            view_w = max(1, int(game_w / self.zoom))
+            view_h = max(1, int(game_h / self.zoom))
             fx, fy = self.zoom_focus[0] * 32, (15 - self.zoom_focus[1]) * 32
-            left = min(max(fx - view_w / 2, 0), game_w - view_w)
-            top = min(max(fy - view_h / 2, 0), game_h - view_h)
-            view = self.game_surf.subsurface(pg.Rect(int(left), int(top), int(view_w), int(view_h)))
+            left = int(min(max(fx - view_w / 2, 0), game_w - view_w))
+            top = int(min(max(fy - view_h / 2, 0), game_h - view_h))
+            view = pg.Surface((view_w, view_h)).convert()
+            view.blit(self.game_surf, (0, 0), pg.Rect(left, top, view_w, view_h))
         scaled = pg.transform.scale(view, new_size)
 
         # Blit the game to the screen as letterbox

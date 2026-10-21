@@ -19,6 +19,7 @@ class Controller:
         self.gun_ready = False
         self.enemy_bullets = []
         self.map = np.zeros((20, 15))
+        self.dt = 0
 
         self.body_turn_action = None
         self.gun_turn_action = None
