@@ -19,7 +19,7 @@ class Game:
         self.level.render()
 
         # Create the user controllers
-        self.controller_1 = HumanControllerLeft()
+        self.controller_1 = Gilbert()
         self.controller_2 = Gilbert()
 
         # Create the players
