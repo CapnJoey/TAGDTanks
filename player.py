@@ -27,13 +27,26 @@ class Player:
         self.enemy = enemy
 
         # Load image assets
-        self.body_image = pg.image.load("./assets/tank.png").convert_alpha()
-        self.body_image = pg.transform.scale(self.body_image, (32, 32))
+        self.body_images = [
+            pg.image.load(f"./assets/{image}.png").convert_alpha() for image in ("tank1", "tank1")
+        ]
+        # self.body_image = pg.image.load("./assets/tank.png").convert_alpha()
+        # self.body_image = pg.transform.scale(self.body_image, (32, 32))
 
         self.gun_image = pg.Surface((16, 8)).convert_alpha()
         self.gun_image.fill((0, 255, 0))
 
+        # Set up animation variables
+        self.body_animation_frame = 0
+        self.gun_animation_frame = 0
+        self.animation_time = 0.5
+        self.frame_timer = 0.0
+
     def update(self):
+
+        # Get delta time
+        dt = self.game.dt
+        
         # Reset the controller state
         self.controller.body_turn_action = None
         self.controller.gun_turn_action = None
@@ -59,9 +72,14 @@ class Player:
         # Call the user controller method
         self.controller.update()
 
-        # Apply the user changes
-        dt = self.game.dt
+        # Update animations
+        self.frame_timer += dt
+        if self.frame_timer > self.animation_time:
+            self.body_animation_frame = (self.body_animation_frame + 1) % 2
+            self.gun_animation_frame  = (self.body_animation_frame + 1) % 2
+            self.frame_timer = 0.0
 
+        # Apply the user changes
         # Body turning
         if self.controller.body_turn_action == 'clockwise':
             self.body_direction -= self.body_turn_speed * dt
@@ -99,7 +117,7 @@ class Player:
         center = (self.x * 32, (15 - self.y) * 32 + layers * separation)
 
         # Render body: rotate once, blit at stacked offsets
-        rotated = pg.transform.rotate(self.body_image, self.body_direction)
+        rotated = pg.transform.rotate(self.body_images[self.body_animation_frame], self.body_direction)
         for stack_y in range(layers):
             rect = rotated.get_rect(center=(center[0], center[1] - stack_y * separation))
             surf.blit(rotated, rect)
