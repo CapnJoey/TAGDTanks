@@ -6,6 +6,7 @@ from game_code.maps import *
 class Level:
     def __init__(self) -> None:
         self.surface = pg.Surface((32 * 20, 32 * 15)).convert()
+        self.map_func = None
 
         # Map
         self.fill_map()
@@ -18,9 +19,11 @@ class Level:
         # Make empty map
         self.map = empty_map()
 
-        # Add real map
+        # Add real map, never the same one twice in a row
         funcs = [plus_map, bars_map, rect_map]
-        self.map = random.choice(funcs)(self.map)
+        choices = [func for func in funcs if func is not self.map_func] or funcs
+        self.map_func = random.choice(choices)
+        self.map = self.map_func(self.map)
 
     def render(self) -> None:
         self.surface.fill((255, 255, 255, 1))

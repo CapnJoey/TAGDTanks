@@ -11,6 +11,15 @@ from game_code.main_menu import MainMenu
 from game_code.particles import ParticleSystem
 from game_code.win_screen import WinScreen, PauseScreen
 from game_code.countdown import Countdown
+from game_code.match_timer import MatchTimer
+
+NORMAL_MAX_BOUNCES = 1
+
+# Rules applied when each match timer phase starts: (max bullet bounces, reload time)
+PHASE_RULES = {
+    1: (100, 1.0),  # Sudden death
+    2: (100, 0.1),  # Suddener death
+}
 
 class Game:
     def __init__(self) -> None:
@@ -49,6 +58,8 @@ class Game:
         self.win_screen = None
         self.pause_screen = None
         self.countdown = Countdown()
+        self.match_timer = MatchTimer()
+        self.bullet_max_bounces = NORMAL_MAX_BOUNCES
 
         # Letterbox transform, used to map window mouse positions onto the game surface
         self.view_scale = 1.0
@@ -69,6 +80,12 @@ class Game:
         self.win_screen = None
         self.pause_screen = None
         self.countdown = Countdown()
+        self.match_timer = MatchTimer()
+        self.bullet_max_bounces = NORMAL_MAX_BOUNCES
+
+        # New random map
+        self.level.fill_map()
+        self.level.render()
 
         # Load users
         self.user_1 = User(name_1)
@@ -114,6 +131,17 @@ class Game:
         self.countdown.update(self.real_dt)
         if self.countdown.blocking:
             return
+
+        if not self.game_over:
+            phase = self.match_timer.update(self.real_dt)
+            if phase in PHASE_RULES:
+                max_bounces, reload_time = PHASE_RULES[phase]
+                self.bullet_max_bounces = max_bounces
+                for bullet in self.bullets:
+                    bullet.max_bounces = max_bounces
+                for player in (self.player_1, self.player_2):
+                    player.shoot_cooldown_time = reload_time
+                    player.shoot_timer = min(player.shoot_timer, reload_time)
 
         self.shake_timer = max(0.0, self.shake_timer - self.dt)
         self.update_zoom()
@@ -173,15 +201,15 @@ class Game:
 
         # Draw overlays over the final view, unaffected by zoom
         overlay = self.pause_screen or self.win_screen
-        if overlay or not self.countdown.done:
-            if view is self.game_surf:
-                view = pg.Surface((game_w, game_h)).convert()
-                view.blit(self.game_surf, (0, 0))
-            else:
-                view = pg.transform.scale(view, (game_w, game_h))
-            self.countdown.render(view)
-            if overlay:
-                overlay.render(view, self.to_surface_pos(pg.mouse.get_pos()))
+        if view is self.game_surf:
+            view = pg.Surface((game_w, game_h)).convert()
+            view.blit(self.game_surf, (0, 0))
+        else:
+            view = pg.transform.scale(view, (game_w, game_h))
+        self.match_timer.render(view)
+        self.countdown.render(view)
+        if overlay:
+            overlay.render(view, self.to_surface_pos(pg.mouse.get_pos()))
 
         scaled = pg.transform.scale(view, new_size)
 

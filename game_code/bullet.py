@@ -12,7 +12,7 @@ class Bullet:
         self.tag = tag
 
         self.bounce_count = 0
-        self.max_bounces = 1
+        self.max_bounces = game.bullet_max_bounces
         self.speed = 5
         self.dead = False
 
