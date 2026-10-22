@@ -3,7 +3,6 @@ import pygame as pg
 import random
 from game_code.cheat_prevention import *
 
-
 class EnemyBullet:
     def __init__(self, x: float, y: float, direction: int) -> None:
         self.x = x
