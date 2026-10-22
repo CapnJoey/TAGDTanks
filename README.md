@@ -72,6 +72,7 @@ And you can access the following member variables:
     - self.tile_y: the y tile of the tank (in grid units)
         
 Helper functions you can use:
+
     - raycast(): shoot a ray from the tank's barrel and retrieve the hit position. this can be helpful for testing hits on walls.
 
 If your bot's code throws an error, your tank will be killed.
