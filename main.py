@@ -12,6 +12,7 @@ from game_code.particles import ParticleSystem
 from game_code.win_screen import WinScreen, PauseScreen
 from game_code.countdown import Countdown
 from game_code.match_timer import MatchTimer
+from game_code import sounds
 
 NORMAL_MAX_BOUNCES = 1
 
@@ -82,6 +83,7 @@ class Game:
         self.countdown = Countdown()
         self.match_timer = MatchTimer()
         self.bullet_max_bounces = NORMAL_MAX_BOUNCES
+        self.stop_engine_sounds()
 
         # New random map
         self.level.fill_map()
@@ -118,6 +120,11 @@ class Game:
         self.zoom += (target_zoom - self.zoom) * min(1.0, 8 * self.real_dt)
         self.time_scale = 1.0 - 0.65 * (self.zoom - 1.0) / (self.max_zoom - 1.0)
 
+    def stop_engine_sounds(self) -> None:
+        for player in (getattr(self, 'player_1', None), getattr(self, 'player_2', None)):
+            if player:
+                player.engine_sound.stop()
+
     def toggle_pause(self) -> None:
         if self.win_screen:
             return
@@ -125,6 +132,7 @@ class Game:
 
     def update(self) -> None:
         if self.pause_screen:
+            self.stop_engine_sounds()
             self.pause_screen.update(self.real_dt)
             return
 
@@ -163,6 +171,7 @@ class Game:
             winner = self.player_1 if self.player_1.alive else self.player_2
             self.win_screen = WinScreen(winner.user.name)
         if self.win_screen:
+            self.stop_engine_sounds()
             self.win_screen.update(self.real_dt)
 
     def render(self) -> None:
@@ -256,9 +265,12 @@ class Game:
 
             overlay = self.pause_screen or self.win_screen
             if overlay and overlay.choice:
+                self.stop_engine_sounds()
                 return overlay.choice == "main_menu"
         return False
 
+pg.mixer.pre_init(44100, -16, 2, 512)
 pg.init()
+sounds.init()
 game = Game()
 game.run()

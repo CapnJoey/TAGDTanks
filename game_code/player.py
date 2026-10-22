@@ -4,6 +4,7 @@ from numpy import cos, sin, deg2rad
 
 from game_code.bullet import Bullet
 from game_code.controller import EnemyBullet
+from game_code import sounds
 
 def collide(map: np.ndarray, x: float, y: float) -> tuple[float, float]:
     """
@@ -74,6 +75,9 @@ class Player:
         self.frame_timer = 0.0
         self.moving = False
         self.shooting = 0
+
+        # Engine sounds (only forward/backward driving counts, not turning)
+        self.engine_sound = sounds.TankEngineSound(tag)
 
     def update(self):
 
@@ -149,6 +153,9 @@ class Player:
 
         self.x, self.y = collide(self.game.level.map, self.x, self.y)
 
+        drive = self.controller.move_action if self.controller.move_action in ('forward', 'backward') else None
+        self.engine_sound.update(drive)
+
         self.moving = (
             self.controller.move_action == 'forward' or
             self.controller.move_action == 'backward' or
@@ -163,6 +170,7 @@ class Player:
             y = self.y + sin(deg2rad(self.gun_direction)) * 0.3
             bullet = Bullet(self.game, x, y, self.gun_direction, self.tag, self.bullet_image)
             self.game.bullets.append(bullet)
+            sounds.play("sndShootLight")
             self.shoot_timer = self.shoot_cooldown_time
             self.game.shake_timer = 0.15
             self.shooting = 3

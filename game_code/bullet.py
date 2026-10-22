@@ -3,6 +3,8 @@ from numpy import sin, cos, sqrt, pi, deg2rad
 from math import floor, ceil
 import random
 
+from game_code import sounds
+
 class Bullet:
     def __init__(self, game, start_x: float=10, start_y: float=7, direction: int=0, tag: int=0, image: pg.Surface|None=None) -> None:
         self.game = game
@@ -40,8 +42,10 @@ class Bullet:
             self.dead = True
             self._add_impact_particles()
             self.game.shake_timer = 0.5
+            sounds.play("sndShootHeavy")
             return False
         self.bounce_count += 1
+        sounds.play("sndShootLight")
         return True
 
     def _add_trail_particles(self):
@@ -98,6 +102,8 @@ class Bullet:
                 self.game.game_over = True
                 self._add_impact_particles()
                 self.game.shake_timer = 0.5
+                sounds.play("sndShootHeavy")
+                return
 
     def render_to(self, surf: pg.Surface):
         # Center of the tile in screen coordinates
