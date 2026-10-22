@@ -1,5 +1,5 @@
 import pygame as pg
-from user import get_bot_names
+from game_code.user import get_bot_names
 
 TEXT_COLOR = pg.Color("#c5ccb8")
 OUTLINE_COLOR = pg.Color("#433455")
@@ -78,10 +78,11 @@ class MainMenu:
         # Character select
         names = get_bot_names()
         default_1 = names.index("Player1") if "Player1" in names else 0
-        default_2 = names.index("Gilbert") if "Gilbert" in names else min(1, len(names) - 1)
+        default_2 = names.index("MyBot") if "MyBot" in names else min(1, len(names) - 1)
+        dropdown_hight = 250
         self.dropdowns = [
-            Dropdown(pg.Rect(105, 304, 150, 22), names, default_1),
-            Dropdown(pg.Rect(385, 304, 150, 22), names, default_2),
+            Dropdown(pg.Rect(105, dropdown_hight, 150, 22), names, default_1),
+            Dropdown(pg.Rect(385, dropdown_hight, 150, 22), names, default_2),
         ]
         self.start_button = pg.Rect(245, 400, 150, 40)
 

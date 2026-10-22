@@ -1,5 +1,6 @@
 import numpy as np
 import pygame as pg
+import random
 
 class EnemyBullet:
     def __init__(self, x: float, y: float, direction: int) -> None:
@@ -39,7 +40,17 @@ class Controller:
 
         # START YOUR CODE HERE
 
-        
+        actions = [
+            self.turn_body_clockwise,
+            self.turn_gun_clockwise,
+            self.move_forward,
+            self.move_forward,
+            self.move_forward,
+            self.move_forward,
+            self.shoot,
+        ]
+        action = random.choice(actions)
+        action()
 
         # END YOUR CODE HERE
 

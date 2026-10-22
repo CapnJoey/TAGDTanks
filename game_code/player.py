@@ -2,8 +2,8 @@ import pygame as pg
 import numpy as np
 from numpy import cos, sin, deg2rad
 
-from bullet import Bullet
-from controller import EnemyBullet
+from game_code.bullet import Bullet
+from game_code.controller import EnemyBullet
 
 def collide(map: np.ndarray, x: float, y: float) -> tuple[float, float]:
     """

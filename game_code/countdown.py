@@ -1,5 +1,5 @@
 import pygame as pg
-from main_menu import TEXT_COLOR, OUTLINE_COLOR
+from game_code.main_menu import TEXT_COLOR, OUTLINE_COLOR
 
 
 class Countdown:

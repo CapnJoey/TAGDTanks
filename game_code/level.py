@@ -1,6 +1,6 @@
 import pygame as pg
 import random
-from maps import *
+from game_code.maps import *
 
 
 class Level:

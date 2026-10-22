@@ -1,13 +1,16 @@
+import os
+import sys
 import random
 from math import hypot
 import pygame as pg
-from level import Level
-from player import Player
-from user import get_bot_names, User
-from main_menu import MainMenu
-from particles import ParticleSystem
-from win_screen import WinScreen, PauseScreen
-from countdown import Countdown
+
+from game_code.level import Level
+from game_code.player import Player
+from game_code.user import get_bot_names, User
+from game_code.main_menu import MainMenu
+from game_code.particles import ParticleSystem
+from game_code.win_screen import WinScreen, PauseScreen
+from game_code.countdown import Countdown
 
 class Game:
     def __init__(self) -> None:

@@ -1,5 +1,5 @@
 import pygame as pg
-from main_menu import TEXT_COLOR, render_box
+from game_code.main_menu import TEXT_COLOR, render_box
 
 
 def ease_out(t: float) -> float:
