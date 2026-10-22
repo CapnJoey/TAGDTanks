@@ -175,7 +175,8 @@ class Game:
         overlay = self.pause_screen or self.win_screen
         if overlay or not self.countdown.done:
             if view is self.game_surf:
-                view = self.game_surf.copy()
+                view = pg.Surface((game_w, game_h)).convert()
+                view.blit(self.game_surf, (0, 0))
             else:
                 view = pg.transform.scale(view, (game_w, game_h))
             self.countdown.render(view)
