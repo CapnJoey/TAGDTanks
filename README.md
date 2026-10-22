@@ -1,5 +1,3 @@
-# TAGD Tanks
-
 <p align="center">
   <img src="assets/banner.png" alt="TAGD Tanks" width="100%">
 </p>
