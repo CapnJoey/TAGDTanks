@@ -6,7 +6,7 @@ from player import Player
 from user import get_bot_names, User
 from main_menu import MainMenu
 from particles import ParticleSystem
-from win_screen import WinScreen
+from win_screen import WinScreen, PauseScreen
 from countdown import Countdown
 
 class Game:
@@ -44,6 +44,7 @@ class Game:
 
         self.game_over = False
         self.win_screen = None
+        self.pause_screen = None
         self.countdown = Countdown()
 
         # Letterbox transform, used to map window mouse positions onto the game surface
@@ -63,6 +64,7 @@ class Game:
         self.time_scale = 1.0
         self.game_over = False
         self.win_screen = None
+        self.pause_screen = None
         self.countdown = Countdown()
 
         # Load users
@@ -96,7 +98,16 @@ class Game:
         self.zoom += (target_zoom - self.zoom) * min(1.0, 8 * self.real_dt)
         self.time_scale = 1.0 - 0.65 * (self.zoom - 1.0) / (self.max_zoom - 1.0)
 
+    def toggle_pause(self) -> None:
+        if self.win_screen:
+            return
+        self.pause_screen = None if self.pause_screen else PauseScreen()
+
     def update(self) -> None:
+        if self.pause_screen:
+            self.pause_screen.update(self.real_dt)
+            return
+
         self.countdown.update(self.real_dt)
         if self.countdown.blocking:
             return
@@ -158,14 +169,15 @@ class Game:
             view.blit(self.game_surf, (0, 0), pg.Rect(left, top, view_w, view_h))
 
         # Draw overlays over the final view, unaffected by zoom
-        if self.win_screen or not self.countdown.done:
+        overlay = self.pause_screen or self.win_screen
+        if overlay or not self.countdown.done:
             if view is self.game_surf:
                 view = self.game_surf.copy()
             else:
                 view = pg.transform.scale(view, (game_w, game_h))
             self.countdown.render(view)
-            if self.win_screen:
-                self.win_screen.render(view, self.to_surface_pos(pg.mouse.get_pos()))
+            if overlay:
+                overlay.render(view, self.to_surface_pos(pg.mouse.get_pos()))
 
         scaled = pg.transform.scale(view, new_size)
 
@@ -173,7 +185,7 @@ class Game:
         pos = ((win_w - new_size[0]) // 2, (win_h - new_size[1]) // 2)
         self.view_scale = scale
         self.view_pos = pos
-        if self.shake_timer > 0:
+        if self.shake_timer > 0 and not self.pause_screen:
             pos = (pos[0] + random.randint(-self.shake_intensity, self.shake_intensity),
                    pos[1] + random.randint(-self.shake_intensity, self.shake_intensity))
         self.win.blit(scaled, pos)
@@ -198,8 +210,11 @@ class Game:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     self.running = False
-                if event.type == pg.MOUSEBUTTONDOWN and event.button == 1 and self.win_screen:
-                    self.win_screen.handle_click(self.to_surface_pos(event.pos))
+                if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+                    self.toggle_pause()
+                overlay = self.pause_screen or self.win_screen
+                if event.type == pg.MOUSEBUTTONDOWN and event.button == 1 and overlay:
+                    overlay.handle_click(self.to_surface_pos(event.pos))
 
             self.real_dt = self.clock.tick(60) / 1000.0
             self.dt = self.real_dt * self.time_scale
@@ -207,8 +222,9 @@ class Game:
             self.update()
             self.render()
 
-            if self.win_screen and self.win_screen.choice:
-                return self.win_screen.choice == "main_menu"
+            overlay = self.pause_screen or self.win_screen
+            if overlay and overlay.choice:
+                return overlay.choice == "main_menu"
         return False
 
 pg.init()

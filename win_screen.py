@@ -7,26 +7,31 @@ def ease_out(t: float) -> float:
     return 1 - (1 - t) ** 3
 
 
-class WinScreen:
-    # Seconds after the kill at which each stage starts, and how long it takes
-    DELAY = 0.6
+class OverlayScreen:
+    """Dims the game, slides in a titled bar, then raises a row of buttons"""
+    # Seconds before the animation starts, and how long each stage takes
+    DELAY = 0.0
     DIM_TIME = 0.4
     BAR_TIME = 0.5
     BUTTON_TIME = 0.5
 
-    def __init__(self, winner_name: str) -> None:
-        self.winner_name = winner_name
+    def __init__(self, title: str, buttons: list[tuple[str, str]]) -> None:
+        self.title = title
         self.timer = 0.0
-        self.choice = None  # "play_again" or "main_menu" once clicked
+        self.choice = None  # key of the clicked button
 
         self.font = pg.font.Font("./assets/upheavtt.ttf", 20)
         self.title_font = pg.font.Font("./assets/upheavtt.ttf", 40)
 
         self.bar_height = 70
         self.bar_y = 170
+
+        # Lay the buttons out in a centered row
+        width, gap = 150, 40
+        left = (640 - len(buttons) * width - (len(buttons) - 1) * gap) // 2
         self.buttons = {
-            "play_again": ("Play Again", pg.Rect(150, 300, 150, 40)),
-            "main_menu": ("Main Menu", pg.Rect(340, 300, 150, 40)),
+            key: (label, pg.Rect(left + i * (width + gap), 300, width, 40))
+            for i, (key, label) in enumerate(buttons)
         }
 
     def progress(self, stage: int) -> float:
@@ -67,7 +72,7 @@ class WinScreen:
             bar_surf = pg.Surface(bar_rect.size, pg.SRCALPHA)
             bar_surf.fill((0, 0, 0, 180))
             surf.blit(bar_surf, bar_rect)
-            text = self.title_font.render(f"{self.winner_name} wins", True, TEXT_COLOR)
+            text = self.title_font.render(self.title, True, TEXT_COLOR)
             surf.blit(text, text.get_rect(center=bar_rect.center))
 
         # Slide the buttons up from the bottom
@@ -78,3 +83,19 @@ class WinScreen:
                 drawn = rect.move(0, int((start_y - rect.y) * (1 - rise)))
                 hover = self.buttons_ready and drawn.collidepoint(mouse)
                 render_box(surf, self.font, drawn, label, hover, centered=True)
+
+
+class WinScreen(OverlayScreen):
+    DELAY = 0.6
+
+    def __init__(self, winner_name: str) -> None:
+        super().__init__(f"{winner_name} wins", [("play_again", "Play Again"), ("main_menu", "Main Menu")])
+
+
+class PauseScreen(OverlayScreen):
+    DIM_TIME = 0.15
+    BAR_TIME = 0.25
+    BUTTON_TIME = 0.25
+
+    def __init__(self) -> None:
+        super().__init__("Paused", [("restart", "Restart"), ("main_menu", "Main Menu")])
