@@ -1,5 +1,7 @@
 import numpy as np
 import pygame as pg
+from game_code.cheat_prevention import *
+
 
 class EnemyBullet:
     def __init__(self, x: float, y: float, direction: int) -> None:

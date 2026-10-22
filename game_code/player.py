@@ -111,7 +111,12 @@ class Player:
                 self.controller.body_turn_action = 'clockwise'
                 self.controller.gun_turn_action  = 'counter_clockwise'
             else:
-                self.controller.update()
+                try:
+                    self.controller.update()
+                except Exception as e:
+                    print("Got a controller error: ", e)
+                    self.alive = False
+                    self.game.game_over = True
 
         # Update animations
         self.frame_timer += dt
