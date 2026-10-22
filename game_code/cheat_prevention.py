@@ -1,0 +1,2 @@
+def locals():
+    raise Exception("CHEATER DETECTED! ATTEMPTED TO ACCESS LOCALS! KILLING TANK!")
