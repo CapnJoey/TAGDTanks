@@ -1,6 +1,17 @@
 # TAGD Tanks
 
+<p align="center">
+  <img src="assets/banner.png" alt="TAGD Tanks" width="100%">
+</p>
+
+
 TAGD Tanks is a toy game for developing AI enemies and player sprites. Players code their own tank AI and have them face off in a 1v1 duel. 
+
+<p align="center">
+  <img src="assets/gameplay1.png" alt="Gameplay" width="49%">
+  <img src="assets/gameplay2.png" alt="Gameplay" width="49%">
+</p>
+
 
 # Usage 
 ## Prerequisites
