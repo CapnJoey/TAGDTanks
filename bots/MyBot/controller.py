@@ -84,7 +84,7 @@ class Controller:
 
         # START YOUR CODE HERE
 
-        locals()
+        
 
         # END YOUR CODE HERE
 
@@ -118,3 +118,51 @@ class Controller:
 
     def shoot(self):
         self.shoot_action = True
+        
+    # ------------------------------------------------------------  
+    # Helpful function Alert :O vvvvvv
+    # ------------------------------------------------------------  
+        
+    def raycast(self) -> tuple[float, float] | None:
+        """
+        Shoot a ray from the tank's barrel and retrieve the hit position. 
+
+        Returns:
+            tuple[float, float]: The coordinate of the raycast hit.
+            None: If no hit.
+        """
+        # walk the ray tile by tile
+        # and anything outside the map counts as a wall
+        dx = np.cos(np.deg2rad(self.gun_direction))
+        dy = np.sin(np.deg2rad(self.gun_direction))
+
+        step_x = 1 if dx > 0 else -1
+        step_y = 1 if dy > 0 else -1
+
+        # ray distance needed to cross one whole tile
+        delta_x = abs(1 / dx) if dx != 0 else np.inf
+        delta_y = abs(1 / dy) if dy != 0 else np.inf
+
+        # ray distance to the first tile boundary
+        tile_x, tile_y = self.tile_x, self.tile_y
+        next_x = (tile_x + (step_x > 0) - self.x) / dx if dx != 0 else np.inf
+        next_y = (tile_y + (step_y > 0) - self.y) / dy if dy != 0 else np.inf
+
+        t = 0.0
+        while 0 <= tile_x < self.map.shape[0] and 0 <= tile_y < self.map.shape[1] and not self.map[tile_x][tile_y]:
+            if next_x < next_y:
+                t, next_x = next_x, next_x + delta_x
+                tile_x += step_x
+            else:
+                t, next_y = next_y, next_y + delta_y
+                tile_y += step_y
+
+        return (float(self.x + dx * t), float(self.y + dy * t))
+    
+    @property
+    def tile_x(self) -> int:
+        return int(np.floor(self.x))
+    
+    @property
+    def tile_y(self) -> int:
+        return int(np.floor(self.y))
