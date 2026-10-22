@@ -73,18 +73,11 @@ class User:
 
         self.controller = module.Controller()
 
-        # Load the tank images
-        self.tank_images = [
-            pg.image.load(os.path.join(self.directory, f"tank{i+1}.png")).convert_alpha() for i in range(4)
-        ]
-        self.tank_images = [pg.transform.scale(image, (32, 32)) for image in self.tank_images]
+        # Animation frames first, idle image last (Player indexes them that way)
+        self.tank_images = [self.load_image(f"tank_move_{i}") for i in range(1, 4)] + [self.load_image("tank_idle")]
+        self.gun_images = [self.load_image(f"gun_shoot_{i}") for i in range(1, 4)] + [self.load_image("gun_idle")]
+        self.bullet_image = self.load_image("bullet")
 
-        # Load gun images
-        self.gun_images = [
-            pg.image.load(os.path.join(self.directory, f"gun{i+1}.png")).convert_alpha() for i in range(4)
-        ]
-        self.gun_images = [pg.transform.scale(image, (32, 32)) for image in self.gun_images]
-
-        # Load the bullet image
-        self.bullet_image = pg.image.load(os.path.join(self.directory, "bullet.png")).convert_alpha()
-        self.bullet_image = pg.transform.scale(self.bullet_image, (32, 32))
+    def load_image(self, name: str) -> pg.Surface:
+        image = pg.image.load(os.path.join(self.directory, f"{name}.png")).convert_alpha()
+        return pg.transform.scale(image, (32, 32))

@@ -3,7 +3,7 @@ import math as I1I1I11II1ll111lIIl11lIIl111IIll1
 import random as l1IIlI1IIl1lI1l11IIlI11I11IlIl1Il
 import numpy as Il1lIll11IIlIlI1ll11IlIl1llIIll1I
 from game_code.cheat_prevention import *
-from maps import *
+from game_code.maps import *
 from collections import deque as llIlI1I1l1IlII1111lll1III11IlIIlI
 lIIll11llII1111l11I1111lll1lI1IlI = 0.5
 III111I1IlI11IllllI1l1llll1lllI1l = 1e-09
