@@ -13,7 +13,7 @@ TAGD Tanks is a toy game for developing AI enemies and player sprites. Players c
 
 # Usage 
 ## Prerequisites
-- Python >= 3.9
+- Python >= 3.10
 - Git
 - An IDE (VSCode)
 
@@ -30,7 +30,7 @@ In your working directory, create a python virtual enviornment and enter and ini
 
 ```bash
 python -m venv .venv
-source .venv\\bin\\activate   # or source .venv/bin/activate for linux/mac
+.venv\Scripts\activate   # or source .venv/bin/activate for linux/mac
 pip install -e .
 ```
 
@@ -66,10 +66,10 @@ And you can access the following member variables:
     - self.gun_direction: the current direction of the gun (in degrees)
     - self.gun_ready: whether the gun is ready to shoot (True or False)
     - self.enemy_bullets: a list of enemy bullets (see EnemyBullet class for more information)
-    - self.map: the current map (a 20x15 numpy array, where map[x][y] == True if there is a wall, False otherwise)
+    - self.map: the current map (a 20x15 numpy array, where map[x][y] is nonzero if there is a wall and 0 otherwise; y = 0 is the bottom row)
     - self.dt: the time since the last frame (in seconds)
 
-If your bot's cod
+If your bot's code throws an error, your tank will be killed.
 
 ## Bot Sprites
 You can replace the sprites in your bot's folder and they will change in game. All sprites should be `32x32` pixels. The bot needs:

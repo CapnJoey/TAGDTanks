@@ -2,7 +2,7 @@
 name = "tagd-ai-game"
 version = "0.1.0"
 description = "Game for learning AI at TAGD"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "pygame-ce",
     "numpy"
