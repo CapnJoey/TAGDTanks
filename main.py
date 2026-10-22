@@ -5,6 +5,7 @@ from level import Level
 from player import Player
 from user import get_bot_names, User
 from main_menu import MainMenu
+from particles import ParticleSystem
 
 class Game:
     def __init__(self) -> None:
@@ -21,20 +22,25 @@ class Game:
         # Main menu
         self.main_menu = MainMenu(self)
 
+        # Particle system
+        self.particle_system = ParticleSystem(self)
+
         # Bullet array
         self.bullets = []
 
         # Screen shake
         self.shake_timer = 0.0
-        self.shake_intensity = 3
+        self.shake_intensity = 4
 
         # Peggle zoom
         self.zoom = 1.0
-        self.max_zoom = 2.0
-        self.zoom_radius = 2.0
+        self.max_zoom = 1.75
+        self.zoom_radius = 1.5
         self.zoom_focus = (10, 7.5)
         self.time_scale = 1.0
         self.real_dt = 0
+
+        self.game_over = False
 
     def start_match(self, name_1: str, name_2: str) -> None:
         # Load users
@@ -74,6 +80,7 @@ class Game:
 
         self.player_1.update()
         self.player_2.update()
+        self.particle_system.update()
 
         dead = []
         for bullet in self.bullets:
@@ -97,9 +104,11 @@ class Game:
             self.player_2.render_to(self.game_surf)
             self.player_1.render_to(self.game_surf)
 
+        
         for bullet in self.bullets:
             bullet.render_to(self.game_surf)
 
+        self.particle_system.render(self.game_surf)
 
         # Get the blit dims
         win_w, win_h = self.win.get_size()

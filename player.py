@@ -65,7 +65,7 @@ class Player:
         self.body_images = user.tank_images
         self.gun_images = user.gun_images
         self.bullet_image = user.bullet_image
-        self.name_font = pg.font.Font("./assets/upheavtt.ttf", 20)
+        self.name_font = pg.font.Font("./assets/upheavtt.ttf", 16)
 
         # Set up animation variables
         self.body_animation_frame = 0
@@ -107,7 +107,11 @@ class Player:
 
         # Call the user controller method
         if self.alive:
-            self.controller.update()
+            if self.game.game_over:
+                self.controller.body_turn_action = 'clockwise'
+                self.controller.gun_turn_action  = 'counter_clockwise'
+            else:
+                self.controller.update()
 
         # Update animations
         self.frame_timer += dt
@@ -152,7 +156,7 @@ class Player:
         if self.shoot_timer <= 0.0 and self.controller.shoot_action:
             x = self.x + cos(deg2rad(self.gun_direction)) * 0.3
             y = self.y + sin(deg2rad(self.gun_direction)) * 0.3
-            bullet = Bullet(x, y, self.gun_direction, self.tag, self.bullet_image)
+            bullet = Bullet(self.game, x, y, self.gun_direction, self.tag, self.bullet_image)
             self.game.bullets.append(bullet)
             self.shoot_timer = self.shoot_cooldown_time
             self.game.shake_timer = 0.15
