@@ -1,2 +1,5 @@
 def locals():
     raise Exception("CHEATER DETECTED! ATTEMPTED TO ACCESS LOCALS! KILLING TANK!")
+
+def globals():
+    raise Exception("CHEATER DETECTED! ATTEMPTED TO ACCESS GLOBALS! KILLING TANK!")
