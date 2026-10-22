@@ -2,8 +2,8 @@ import pygame as pg
 import numpy as np
 from numpy import cos, sin, deg2rad
 
-from bullet import Bullet
-from controller import EnemyBullet
+from game_code.bullet import Bullet
+from game_code.controller import EnemyBullet
 
 def collide(map: np.ndarray, x: float, y: float) -> tuple[float, float]:
     """
@@ -37,13 +37,14 @@ def collide(map: np.ndarray, x: float, y: float) -> tuple[float, float]:
     return x, y
 
 class Player:
-    def __init__(self, game, controller, enemy, start_x: float=1.0, start_y: float=1.0, start_dir: int=0, tag: int=1) -> None:
+    def __init__(self, game, user, enemy, start_x: float=1.0, start_y: float=1.0, start_dir: int=0, tag: int=1) -> None:
         # Player state variables
         self.x = start_x
         self.y = start_y
         self.body_direction = start_dir
         self.gun_direction = start_dir
         self.tag = tag
+        self.alive = True
 
         self.body_turn_speed = 360 / 2
         self.gun_turn_speed = 360 / 2
@@ -51,23 +52,20 @@ class Player:
         self.shoot_timer = 0.0
         self.shoot_cooldown_time = 3.0
 
+        # User
+        self.user = user
+        # User controller
+        self.controller = user.controller
         # Parent game
         self.game = game
-        # Child controller
-        self.controller = controller
         # Enemy
         self.enemy = enemy
 
         # Load image assets
-        self.body_images = [
-            pg.image.load(f"./assets/{image}.png").convert_alpha() for image in ("tank2", "tank3", "tank4", "tank1")
-        ]
-        self.gun_images = [
-            pg.image.load(f"./assets/{image}.png").convert_alpha() for image in ("gun2", "gun3", "gun4", "gun1")
-        ]
-        
-        self.bullet_image = pg.image.load(f"./assets/bullet.png").convert_alpha()
-        self.bullet_image = pg.transform.scale(self.bullet_image, (32, 32))
+        self.body_images = user.tank_images
+        self.gun_images = user.gun_images
+        self.bullet_image = user.bullet_image
+        self.name_font = pg.font.Font("./assets/upheavtt.ttf", 16)
 
         # Set up animation variables
         self.body_animation_frame = 0
@@ -108,7 +106,12 @@ class Player:
         self.controller.dt = dt
 
         # Call the user controller method
-        self.controller.update()
+        if self.alive:
+            if self.game.game_over:
+                self.controller.body_turn_action = 'clockwise'
+                self.controller.gun_turn_action  = 'counter_clockwise'
+            else:
+                self.controller.update()
 
         # Update animations
         self.frame_timer += dt
@@ -153,7 +156,7 @@ class Player:
         if self.shoot_timer <= 0.0 and self.controller.shoot_action:
             x = self.x + cos(deg2rad(self.gun_direction)) * 0.3
             y = self.y + sin(deg2rad(self.gun_direction)) * 0.3
-            bullet = Bullet(x, y, self.gun_direction, self.tag, self.bullet_image)
+            bullet = Bullet(self.game, x, y, self.gun_direction, self.tag, self.bullet_image)
             self.game.bullets.append(bullet)
             self.shoot_timer = self.shoot_cooldown_time
             self.game.shake_timer = 0.15
@@ -179,3 +182,13 @@ class Player:
         rotated = pg.transform.rotate(gun_image, self.gun_direction)
         rect = rotated.get_rect(center=(center[0], center[1] - layers * separation))
         surf.blit(rotated, rect)
+
+        # Render the name
+        font = self.name_font
+        text = font.render(self.user.name, True, (255, 255, 255))
+        font.outline = 1
+        outline = font.render(self.user.name, True, (0, 0, 0))
+        font.outline = 0
+        name_center = (center[0], center[1] - layers * separation - 20)
+        surf.blit(outline, outline.get_rect(center=name_center))
+        surf.blit(text, text.get_rect(center=name_center))

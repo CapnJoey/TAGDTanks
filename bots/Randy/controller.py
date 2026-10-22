@@ -1,5 +1,6 @@
 import numpy as np
 import pygame as pg
+import random
 
 class EnemyBullet:
     def __init__(self, x: float, y: float, direction: int) -> None:
@@ -39,9 +40,17 @@ class Controller:
 
         # START YOUR CODE HERE
 
-        self.move_forward()
-        self.turn_body_clockwise()
-        # self.turn_gun_counter_clockwise()
+        actions = [
+            self.turn_body_clockwise,
+            self.turn_gun_clockwise,
+            self.move_forward,
+            self.move_forward,
+            self.move_forward,
+            self.move_forward,
+            self.shoot,
+        ]
+        action = random.choice(actions)
+        action()
 
         # END YOUR CODE HERE
 
@@ -75,34 +84,3 @@ class Controller:
 
     def shoot(self):
         self.shoot_action = True
-
-
-class HumanControllerLeft(Controller):
-    def __init__(self) -> None:
-        super().__init__()
-
-    def update(self):
-        keys = pg.key.get_pressed()
-
-        if keys[pg.K_w]: self.move_forward()
-        if keys[pg.K_s]: self.move_backward()
-        if keys[pg.K_a]: self.turn_body_counter_clockwise()
-        if keys[pg.K_d]: self.turn_body_clockwise()
-        if keys[pg.K_q]: self.turn_gun_counter_clockwise()
-        if keys[pg.K_e]: self.turn_gun_clockwise()
-        if keys[pg.K_LSHIFT]: self.shoot()
-
-class HumanControllerRight(Controller):
-    def __init__(self) -> None:
-        super().__init__()
-
-    def update(self):
-        keys = pg.key.get_pressed()
-
-        if keys[pg.K_i]: self.move_forward()
-        if keys[pg.K_k]: self.move_backward()
-        if keys[pg.K_j]: self.turn_body_counter_clockwise()
-        if keys[pg.K_l]: self.turn_body_clockwise()
-        if keys[pg.K_u]: self.turn_gun_counter_clockwise()
-        if keys[pg.K_o]: self.turn_gun_clockwise()
-        if keys[pg.K_RETURN]: self.shoot()
