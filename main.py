@@ -6,6 +6,7 @@ from player import Player
 from user import get_bot_names, User
 from main_menu import MainMenu
 from particles import ParticleSystem
+from win_screen import WinScreen
 
 class Game:
     def __init__(self) -> None:
@@ -41,8 +42,26 @@ class Game:
         self.real_dt = 0
 
         self.game_over = False
+        self.win_screen = None
+
+        # Letterbox transform, used to map window mouse positions onto the game surface
+        self.view_scale = 1.0
+        self.view_pos = (0, 0)
+
+    def to_surface_pos(self, pos: tuple[int, int]) -> tuple[int, int]:
+        return (int((pos[0] - self.view_pos[0]) / self.view_scale),
+                int((pos[1] - self.view_pos[1]) / self.view_scale))
 
     def start_match(self, name_1: str, name_2: str) -> None:
+        # Reset match state
+        self.bullets = []
+        self.particle_system.particles = []
+        self.shake_timer = 0.0
+        self.zoom = 1.0
+        self.time_scale = 1.0
+        self.game_over = False
+        self.win_screen = None
+
         # Load users
         self.user_1 = User(name_1)
         self.user_2 = User(name_2)
@@ -91,6 +110,12 @@ class Game:
         for bullet in dead:
             self.bullets.remove(bullet)
 
+        if self.game_over and self.win_screen is None:
+            winner = self.player_1 if self.player_1.alive else self.player_2
+            self.win_screen = WinScreen(winner.user.name)
+        if self.win_screen:
+            self.win_screen.update(self.real_dt)
+
     def render(self) -> None:
         # Clear background
         self.win.fill((0, 0, 0, 255))
@@ -124,10 +149,21 @@ class Game:
             top = int(min(max(fy - view_h / 2, 0), game_h - view_h))
             view = pg.Surface((view_w, view_h)).convert()
             view.blit(self.game_surf, (0, 0), pg.Rect(left, top, view_w, view_h))
+
+        # Draw the win screen over the final view, unaffected by zoom
+        if self.win_screen:
+            if view is self.game_surf:
+                view = self.game_surf.copy()
+            else:
+                view = pg.transform.scale(view, (game_w, game_h))
+            self.win_screen.render(view, self.to_surface_pos(pg.mouse.get_pos()))
+
         scaled = pg.transform.scale(view, new_size)
 
         # Blit the game to the screen as letterbox
         pos = ((win_w - new_size[0]) // 2, (win_h - new_size[1]) // 2)
+        self.view_scale = scale
+        self.view_pos = pos
         if self.shake_timer > 0:
             pos = (pos[0] + random.randint(-self.shake_intensity, self.shake_intensity),
                    pos[1] + random.randint(-self.shake_intensity, self.shake_intensity))
@@ -138,20 +174,33 @@ class Game:
 
     def run(self) -> None:
         self.running = True
-        self.main_menu.run()
-        if not self.running:
-            return
-        self.start_match(*self.main_menu.selected_names)
+        show_menu = True
+        while self.running:
+            if show_menu:
+                self.main_menu.run()
+                if not self.running:
+                    return
+            self.start_match(*self.main_menu.selected_names)
+            show_menu = self.play_match()
+
+    def play_match(self) -> bool:
+        """Runs one match. Returns True if the player chose to go back to the main menu."""
         while self.running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     self.running = False
-            
+                if event.type == pg.MOUSEBUTTONDOWN and event.button == 1 and self.win_screen:
+                    self.win_screen.handle_click(self.to_surface_pos(event.pos))
+
             self.real_dt = self.clock.tick(60) / 1000.0
             self.dt = self.real_dt * self.time_scale
 
             self.update()
             self.render()
+
+            if self.win_screen and self.win_screen.choice:
+                return self.win_screen.choice == "main_menu"
+        return False
 
 pg.init()
 game = Game()
