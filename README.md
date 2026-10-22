@@ -81,3 +81,20 @@ You can replace the sprites in your bot's folder and they will change in game. A
 - 1 Bullet sprite
 
 If you really want to change the pixel size, you can, but it needs to be a sqaure image and all images need the same dimensions. 
+
+## Submitting a Bot
+Submit your bot as a `.zip` with the following structure:
+
+```text
+bot-name/
+├── controller.py
+├── tank_idle.png
+├── tank_move_1.png
+├── tank_move_2.png
+├── tank_move_3.png
+├── gun_idle.png
+├── gun_shoot_1.png
+├── gun_shoot_2.png
+├── gun_shoot_3.png
+└── bullet.png
+```
