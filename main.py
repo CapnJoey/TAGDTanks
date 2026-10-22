@@ -7,6 +7,7 @@ from user import get_bot_names, User
 from main_menu import MainMenu
 from particles import ParticleSystem
 from win_screen import WinScreen
+from countdown import Countdown
 
 class Game:
     def __init__(self) -> None:
@@ -43,6 +44,7 @@ class Game:
 
         self.game_over = False
         self.win_screen = None
+        self.countdown = Countdown()
 
         # Letterbox transform, used to map window mouse positions onto the game surface
         self.view_scale = 1.0
@@ -61,6 +63,7 @@ class Game:
         self.time_scale = 1.0
         self.game_over = False
         self.win_screen = None
+        self.countdown = Countdown()
 
         # Load users
         self.user_1 = User(name_1)
@@ -94,6 +97,10 @@ class Game:
         self.time_scale = 1.0 - 0.65 * (self.zoom - 1.0) / (self.max_zoom - 1.0)
 
     def update(self) -> None:
+        self.countdown.update(self.real_dt)
+        if self.countdown.blocking:
+            return
+
         self.shake_timer = max(0.0, self.shake_timer - self.dt)
         self.update_zoom()
 
@@ -150,13 +157,15 @@ class Game:
             view = pg.Surface((view_w, view_h)).convert()
             view.blit(self.game_surf, (0, 0), pg.Rect(left, top, view_w, view_h))
 
-        # Draw the win screen over the final view, unaffected by zoom
-        if self.win_screen:
+        # Draw overlays over the final view, unaffected by zoom
+        if self.win_screen or not self.countdown.done:
             if view is self.game_surf:
                 view = self.game_surf.copy()
             else:
                 view = pg.transform.scale(view, (game_w, game_h))
-            self.win_screen.render(view, self.to_surface_pos(pg.mouse.get_pos()))
+            self.countdown.render(view)
+            if self.win_screen:
+                self.win_screen.render(view, self.to_surface_pos(pg.mouse.get_pos()))
 
         scaled = pg.transform.scale(view, new_size)
 
