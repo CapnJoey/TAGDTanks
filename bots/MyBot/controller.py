@@ -229,6 +229,7 @@ class Controller:
                     self.move_backward()
                 else:
                     print("here")
+                    
 
 
         # u = [self.x, self.y]
@@ -245,15 +246,14 @@ class Controller:
 
         # END YOUR CODE HERE
 
-
-    def angle_between_vectors(u, v):
-        dot_product = sum(i*j for i, j in zip(u, v))
-        norm_u = math.sqrt(sum(i**2 for i in u))
-        norm_v = math.sqrt(sum(i**2 for i in v))
-        cos_theta = dot_product / (norm_u * norm_v)
-        angle_rad = math.acos(cos_theta)
-        angle_deg = math.degrees(angle_rad)
-        return angle_rad, angle_deg
+    def angle_gun(self):
+        m1 = (self.enemy_y - self.y) / (self.enemy_x - self.x)
+        m2 = math.tan(math.atan(self.y / self.x) - np.deg2rad(self.gun_direction))
+        angle_diff: float = math.atan(abs((m1 - m2) / (1 + m1 * m2)))
+        if angle_diff > self.gun_direction:
+            self.turn_gun_clockwise()
+        elif angle_diff < self.gun_direction:
+            self.turn_gun_counter_clockwise()
 
     def turn_body_clockwise(self):
         self.body_turn_action = "clockwise"
