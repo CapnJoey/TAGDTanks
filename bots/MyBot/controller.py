@@ -93,6 +93,75 @@ class Controller:
         self.angle_gun()
         if self.gun_ready:
             self.shoot()
+
+
+        for x in self.map:
+            print(x)
+            print("CURRENT X: ", self.x)
+
+        moveX = 0
+        moveY = 0
+
+        if(self.enemy_x > self.x):
+            moveX = 1
+        else:
+            moveX = -1
+
+        if(self.enemy_y - 1 > self.y):
+            moveY = 1
+        else:
+            moveY = -1
+
+        modRot = self.body_direction % 360
+
+        print("moveX: ", moveX )
+
+        if(moveX == 1):
+            if(self.map[round(self.x + 1), round(self.y)] == True):
+                moveY = -1
+                print("moveY = -1")
+            if(moveY == 1):
+                if(modRot < 50 or modRot > 40):
+                    if(modRot < 180 + 45):
+                        self.turn_body_clockwise()
+                    else:
+                        self.turn_body_counter_clockwise()
+                    self.move_forward()
+            elif(moveY == -1):   
+                print("godown") 
+                if(modRot < 320 or modRot > 310):
+                    print("am here", modRot)
+                    if(modRot < 315 - 180):
+                        self.turn_body_clockwise()
+                    else:
+                        self.turn_body_counter_clockwise()
+                    self.move_forward()
+                else:
+                    print("here")
+
+        if(moveX == -1):
+            if(self.map[round(self.x + 1), round(self.y)] == True):
+                moveY = -1
+                print("moveY = -1")
+            if(moveY == 1):
+                if(modRot < 50 or modRot > 40):
+                    if(modRot < 180 + 45):
+                        self.turn_body_clockwise()
+                    else:
+                        self.turn_body_counter_clockwise()
+                    self.move_backward()
+            elif(moveY == -1):   
+                print("godown") 
+                if(modRot < 320 or modRot > 310):
+                    print("am here", modRot)
+                    if(modRot < 315 - 180):
+                        self.turn_body_clockwise()
+                    else:
+                        self.turn_body_counter_clockwise()
+                    self.move_backward()
+                else:
+                    print("here")
+
         # END YOUR CODE HERE
 
     def angle_gun(self):
