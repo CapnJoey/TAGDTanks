@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import pygame as pg
 import random
 from game_code.cheat_prevention import *
@@ -89,8 +90,19 @@ class Controller:
         """
 
         # START YOUR CODE HERE
-
+        self.angle_gun()
+        if self.gun_ready:
+            self.shoot()
         # END YOUR CODE HERE
+
+    def angle_gun(self):
+        m1 = (self.enemy_y - self.y) / (self.enemy_x - self.x)
+        m2 = math.tan(math.atan(self.y / self.x) - np.deg2rad(self.gun_direction))
+        angle_diff: float = math.atan(abs((m1 - m2) / (1 + m1 * m2)))
+        if angle_diff > self.gun_direction:
+            self.turn_gun_clockwise()
+        elif angle_diff < self.gun_direction:
+            self.turn_gun_counter_clockwise()
 
     def turn_body_clockwise(self):
         self.body_turn_action = "clockwise"
