@@ -86,6 +86,8 @@ class Controller:
                     self.move_forward()  # Instead
         
             - If your code throws an error, it will be caught and your tank will be killed.
+
+            - We will look at your code, dont cheat
         """
 
         # START YOUR CODE HERE
