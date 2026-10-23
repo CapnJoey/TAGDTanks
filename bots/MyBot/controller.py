@@ -8,40 +8,38 @@ class EnemyBullet:
     def __init__(self, x: float, y: float, direction: int) -> None:
         """
         Represents an enemy bullet.
-        
+
         Args:
             x: the x position of the bullet (in grid units)
             y: the y position of the bullet (in grid units)
             direction: the direction of the bullet (in degrees)
         """
-        self.x         : float = x
-        self.y         : float = y
-        self.direction : int   = direction
+        self.x: float = x
+        self.y: float = y
+        self.direction: int = direction
 
 
 class Controller:
     def __init__(self) -> None:
         # Initialize state variables
-        self.x              : float             = 0
-        self.y              : float             = 0
-        self.enemy_x        : float             = 0
-        self.enemy_y        : float             = 0
-        self.body_direction : int               = 0
-        self.gun_direction  : int               = 0
-        self.gun_ready      : bool              = False
-        self.enemy_bullets  : list[EnemyBullet] = []
-        self.map            : np.ndarray        = np.zeros((20, 15))
-        self.dt             : float             = 0
+        self.x: float = 0
+        self.y: float = 0
+        self.enemy_x: float = 0
+        self.enemy_y: float = 0
+        self.body_direction: int = 0
+        self.gun_direction: int = 0
+        self.gun_ready: bool = False
+        self.enemy_bullets: list[EnemyBullet] = []
+        self.map: np.ndarray = np.zeros((20, 15))
+        self.dt: float = 0
 
         # Initialize action variables
         self.body_turn_action = None
-        self.gun_turn_action  = None
-        self.move_action      = None
-        self.shoot_action     = False
+        self.gun_turn_action = None
+        self.move_action = None
+        self.shoot_action = False
 
         # DEFINE CUSTOM STATE VARIABLES (optional)
-
-
 
         # END DEFINE CUSTOM STATE VARIABLES (optional)
 
@@ -71,7 +69,7 @@ class Controller:
         - self.dt: the time since the last frame (in seconds)
         - self.tile_x: the x tile of the tank (in grid units)
         - self.tile_y: the y tile of the tank (in grid units)
-        
+
         Helper functions you can use:
         - raycast(): shoot a ray from the tank's barrel and retrieve the hit position.
             this can be helpful for testing hits on walls
@@ -84,7 +82,7 @@ class Controller:
                     self.x = 10  # WILL NOT WORK
                 Use:
                     self.move_forward()  # Instead
-        
+
             - If your code throws an error, it will be caught and your tank will be killed.
 
             - We will look at your code, dont cheat
@@ -92,17 +90,14 @@ class Controller:
 
         # START YOUR CODE HERE
 
-        
-
         # END YOUR CODE HERE
 
-
-    def turn_body_clockwise(self): 
+    def turn_body_clockwise(self):
         self.body_turn_action = "clockwise"
 
     def turn_body_counter_clockwise(self):
         self.body_turn_action = "counter_clockwise"
-    
+
     def stop_turn_body(self):
         self.body_turn_action = None
 
@@ -126,14 +121,14 @@ class Controller:
 
     def shoot(self):
         self.shoot_action = True
-        
-    # ------------------------------------------------------------  
+
+    # ------------------------------------------------------------
     # Helpful function Alert :O vvvvvv
-    # ------------------------------------------------------------  
-        
+    # ------------------------------------------------------------
+
     def raycast(self) -> tuple[float, float] | None:
         """
-        Shoot a ray from the tank's barrel and retrieve the hit position. 
+        Shoot a ray from the tank's barrel and retrieve the hit position.
 
         Returns:
             tuple[float, float]: The coordinate of the raycast hit.
@@ -157,7 +152,11 @@ class Controller:
         next_y = (tile_y + (step_y > 0) - self.y) / dy if dy != 0 else np.inf
 
         t = 0.0
-        while 0 <= tile_x < self.map.shape[0] and 0 <= tile_y < self.map.shape[1] and not self.map[tile_x][tile_y]:
+        while (
+            0 <= tile_x < self.map.shape[0]
+            and 0 <= tile_y < self.map.shape[1]
+            and not self.map[tile_x][tile_y]
+        ):
             if next_x < next_y:
                 t, next_x = next_x, next_x + delta_x
                 tile_x += step_x
@@ -166,11 +165,36 @@ class Controller:
                 tile_y += step_y
 
         return (float(self.x + dx * t), float(self.y + dy * t))
-    
+
     @property
     def tile_x(self) -> int:
         return int(np.floor(self.x))
-    
+
     @property
     def tile_y(self) -> int:
         return int(np.floor(self.y))
+
+
+def bfs(adj):
+    V = adj.size()
+    visited = [False for i in range(V)]
+    res = []
+
+    q = []
+
+    src = 0
+    visited[src] = True
+    q.append(src)
+
+    while len(q) > 0:
+        curr = q[-1]
+        q.pop(-1)
+        res.append(curr)
+
+        # visit all the unvisited
+        # neighbours of current node
+        for x in adj[curr]:
+            if not visited[x]:
+                visited[x] = True
+                q.append(x)
+    return res
