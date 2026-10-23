@@ -17,7 +17,7 @@ def init() -> None:
             pg.mixer.init()
         pg.mixer.set_num_channels(16)
         pg.mixer.set_reserved(CHANNELS_PER_TANK * MAX_TANKS)
-        for name in ("sndShootLight", "sndShootHeavy", "tankloop", "tankwindup"):
+        for name in ("sndShootLight", "sndShootHeavy", "tankloop", "tankwindup", "crashed"):
             _sounds[name] = pg.mixer.Sound(f"./assets/{name}.wav")
         _enabled = True
     except pg.error as e:

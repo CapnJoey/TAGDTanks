@@ -119,6 +119,7 @@ class Player:
                     self.controller.update()
                 except Exception as e:
                     print("Got a controller error: ", e)
+                    sounds.play("crashed")
                     self.alive = False
                     self.game.game_over = True
 
